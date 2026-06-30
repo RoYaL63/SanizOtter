@@ -1,6 +1,6 @@
 {
     "name":  "sanizotter",
-    "version":  "0.1.3",
+    "version":  "0.1.4",
     "private":  true,
     "type":  "module",
     "description":  "Application desktop locale pour anonymiser et desanonymiser des textes avant usage avec une IA.",
@@ -44,6 +44,7 @@
                   "files":  [
                                 "dist/**/*",
                                 "dist-electron/**/*",
+                                "public/**/*",
                                 "package.json"
                             ],
                   "win":  {

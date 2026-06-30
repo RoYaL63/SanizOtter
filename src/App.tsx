@@ -99,7 +99,7 @@ function App() {
 
   return <main className={"app " + theme}>
     <nav className="nav glass">
-      <div className="brand"><span className="brandMark">SO</span><div><p className="eyebrow">SanizOtter</p><h1>Sanitizer local pour textes sensibles</h1></div></div>
+      <div className="brand"><img className="brandLogo" src="/sanizotter-logo.png" alt="SanizOtter" /><div><p className="eyebrow">SanizOtter</p><h1>Sanitizer local pour textes sensibles</h1></div></div>
       <div className="navActions">
         <button className="iconButton" onClick={() => setTheme(theme === "light" ? "dark" : "light")}>{theme === "light" ? "Nuit" : "Jour"}</button>
         <button className="softButton" onClick={resetSession}>Vider la session</button>
@@ -108,8 +108,8 @@ function App() {
     </nav>
 
     <section className="heroBand">
-      <div><p className="eyebrow">Traitement local sans IA</p><h2>Colle un texte, anonymise les donnees sensibles, puis restaure les balises quand tu as fini.</h2></div>
-      <div className="heroStats"><span>{activeCount} balises</span><span>{Object.keys(groupedCounts).length} categories</span><span>{reusableRuleCount} regles sauvegardees</span></div>
+      <div className="heroCopy"><p className="eyebrow">Traitement local sans IA</p><h2>Colle un texte, anonymise les donnees sensibles, puis restaure les balises quand tu as fini.</h2><div className="heroStats"><span>{activeCount} balises</span><span>{Object.keys(groupedCounts).length} categories</span><span>{reusableRuleCount} regles sauvegardees</span></div></div>
+      <img className="heroMascot" src="/sanizotter-logo.png" alt="Mascotte SanizOtter" />
     </section>
 
     <section className="guideSteps">
