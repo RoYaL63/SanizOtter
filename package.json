@@ -1,6 +1,6 @@
 {
     "name":  "sanizotter",
-    "version":  "0.1.1",
+    "version":  "0.1.2",
     "private":  true,
     "type":  "module",
     "description":  "Application desktop locale pour anonymiser et desanonymiser des textes avant usage avec une IA.",
@@ -12,7 +12,7 @@
                     "build":  "tsc \u0026\u0026 vite build \u0026\u0026 tsc -p tsconfig.electron.json",
                     "desktop":  "npm run build \u0026\u0026 electron .",
                     "start":  "npm run desktop",
-                    "dist":  "npm run build \u0026\u0026 electron-builder --win nsis",
+                    "dist":  "npm run build \u0026\u0026 electron-builder --win nsis --publish never",
                     "test":  "vitest run"
                 },
     "dependencies":  {
