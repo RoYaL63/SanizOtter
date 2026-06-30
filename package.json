@@ -51,6 +51,7 @@
                               "target":  [
                                              "nsis"
                                          ],
+                              "icon":  "build/icon.ico",
                               "artifactName":  "SanizOtter-Setup-${version}.${ext}"
                           },
                   "nsis":  {
@@ -58,7 +59,9 @@
                                "perMachine":  false,
                                "allowToChangeInstallationDirectory":  true,
                                "createDesktopShortcut":  true,
-                               "createStartMenuShortcut":  true
+                               "createStartMenuShortcut":  true,
+                               "installerIcon":  "build/icon.ico",
+                               "uninstallerIcon":  "build/icon.ico"
                            }
               },
     "author":  "RoYaL63"
