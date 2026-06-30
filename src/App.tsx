@@ -135,7 +135,8 @@ function App() {
 
       <article className="panel restorePanel">
         <div className="panelHeader"><div><p className="eyebrow">03 - Restaurer</p><h2>Texte avec vraies valeurs</h2></div><button className="primaryButton" onClick={restore}>Restaurer</button></div>
-        <textarea className="textArea half" value={aiText} onChange={(event) => setAiText(event.target.value)} placeholder="Colle ici un texte contenant les balises {{...}}." />
+        <textarea className="textArea half" value={aiText} onChange={(event) => setAiText(event.target.value)} placeholder="Colle ici la reponse de l'IA contenant les balises {{...}}." />
+        <div className="subHead"><span className="eyebrow">Resultat</span><button className="softButton" onClick={() => copy(restoredText)} disabled={!restoredText}>Copier le resultat</button></div>
         <textarea className="textArea half output" value={restoredText} readOnly placeholder="Le texte restaure apparaitra ici." />
         {unknownPlaceholders.length > 0 && <p className="warning">Balises inconnues conservees : {unknownPlaceholders.join(", ")}</p>}
       </article>
