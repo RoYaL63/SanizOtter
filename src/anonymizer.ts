@@ -29,9 +29,9 @@ export const categoryLabels: Record<SensitiveCategory, string> = {
 };
 
 const firstNames = [
-  "adam", "adrien", "alice", "amelie", "antoine", "camille", "charlotte", "chloe", "claire", "david",
-  "emma", "gabriel", "hugo", "ines", "jade", "jean", "julie", "lea", "leo", "louis", "lucas",
-  "marie", "mathieu", "nicolas", "paul", "sarah", "thomas", "victor",
+  "adam", "adrien", "alice", "amelie", "antoine", "augustin", "brieuc", "camille", "charlotte", "chloe", "claire",
+  "david", "emma", "eric", "gabriel", "gael", "gaelle", "hugo", "ines", "jade", "jean", "julie",
+  "lea", "leo", "louis", "lucas", "marie", "mathieu", "nicolas", "paul", "sarah", "thomas", "victor",
 ];
 
 const healthTerms = ["allergie", "cancer", "diabete", "diagnostic", "handicap", "hospitalisation", "maladie", "ordonnance", "pathologie", "traitement"];
@@ -46,18 +46,19 @@ const regexSpecs: Array<{ category: SensitiveCategory; regex: RegExp; priority: 
   { category: "SIRET", regex: /\b(?:SIRET|SIREN)[ :#-]*(?:\d[ ]?){9,14}\b/gi, priority: 106 },
   { category: "SIRET", regex: /\b\d{3}[ ]?\d{3}[ ]?\d{3}(?:[ ]?\d{5})?\b/g, priority: 72 },
   { category: "IP", regex: /\b(?:(?:25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(?:25[0-5]|2[0-4]\d|1?\d?\d)\b/g, priority: 100 },
-  { category: "URL", regex: /\bhttps?:\/\/[^\s<>"']+/gi, priority: 98 },
+  { category: "URL", regex: /\bhttps?:\/\/[^\s<>"]+/gi, priority: 98 },
   { category: "DATE", regex: /\b(?:\d{1,2}[\/.-]\d{1,2}[\/.-]\d{2,4}|\d{4}-\d{2}-\d{2})\b/g, priority: 86 },
   { category: "ADMIN", regex: /\b(?:NIR|securite sociale|numero fiscal|passeport|CNI)[ :#-]*[A-Z0-9 -]{6,}\b/gi, priority: 84 },
-  { category: "ADRESSE", regex: /\b\d{1,4}\s+(?:rue|avenue|av\.|boulevard|bd|chemin|impasse|place|route)\s+[A-Za-zÀ-ÿ' -]{3,}\b/gi, priority: 78 },
-  { category: "ENTREPRISE", regex: /\b[A-Z][A-Za-zÀ-ÿ' -]{2,}\s+(?:SAS|SARL|SA|EURL|SCI|SNC|Association)\b/g, priority: 70 },
-  { category: "NOM", regex: /\b(?:M\.|Mme|Monsieur|Madame|Dr|Docteur)\s+([A-Z][A-Za-zÀ-ÿ'-]{2,})\b/g, priority: 62 },
-  { category: "NOM", regex: /\b[A-ZÀ-Ý]{3,}(?:-[A-ZÀ-Ý]{2,})?\b/g, priority: 48 },
+  { category: "ADRESSE", regex: /\b\d{1,4}\s+(?:rue|avenue|av\.|boulevard|bd|chemin|impasse|place|route)\s+[\p{L}' -]{3,}\b/giu, priority: 78 },
+  { category: "ENTREPRISE", regex: /\b\p{Lu}[\p{L}' -]{2,}\s+(?:SAS|SARL|SA|EURL|SCI|SNC|Association)\b/gu, priority: 70 },
+  { category: "NOM", regex: /\b(?:M\.|Mme|Monsieur|Madame|Dr|Docteur)\s+(\p{Lu}[\p{L}'-]{2,})\b/gu, priority: 62 },
+  { category: "NOM", regex: /\b\p{Lu}{3,}(?:-\p{Lu}{2,})?\b/gu, priority: 48 },
   { category: "IDENTIFIANT", regex: /\b(?:id|user|login|compte|client)[ :#-]*[A-Z0-9_-]{4,}\b/gi, priority: 46 },
 ];
 
 const normalize = (value: string) => value.trim().replace(/\s+/g, " ");
-const escapeRegex = (value: string) => value.replace(/[|\{}()[\]^$+*?.]/g, "\\$&");
+const normalizeLookup = (value: string) => normalize(value).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("fr-FR");
+const escapeRegex = (value: string) => value.replace(/[|\\{}()[\]^$+*?.]/g, "\\$&");
 const makeId = (category: SensitiveCategory, start: number, end: number, original: string) => category + "-" + start + "-" + end + "-" + original.length;
 
 const collectRegex = (text: string, candidates: Candidate[]) => {
@@ -70,10 +71,21 @@ const collectRegex = (text: string, candidates: Candidate[]) => {
   }
 };
 
+const collectPersonPairs = (text: string, candidates: Candidate[]) => {
+  for (const match of text.matchAll(/\b(\p{Lu}[\p{L}'-]{2,})\s+(\p{Lu}[\p{L}'-]{2,})\b/gu)) {
+    if (match.index === undefined || !match[1] || !match[2]) continue;
+    if (!firstNames.includes(normalizeLookup(match[1]))) continue;
+    const firstNameStart = match.index;
+    const lastNameStart = firstNameStart + match[1].length + 1;
+    candidates.push({ category: "PRENOM", original: match[1], start: firstNameStart, end: firstNameStart + match[1].length, source: "auto", priority: 96 });
+    candidates.push({ category: "NOM", original: match[2], start: lastNameStart, end: lastNameStart + match[2].length, source: "auto", priority: 82 });
+  }
+};
+
 const collectFirstNames = (text: string, candidates: Candidate[]) => {
-  for (const match of text.matchAll(/\b[A-ZÀ-Ý][A-Za-zÀ-ÿ'-]{2,}\b/g)) {
-    if (match.index !== undefined && firstNames.includes(match[0].toLocaleLowerCase("fr-FR"))) {
-      candidates.push({ category: "PRENOM", original: match[0], start: match.index, end: match.index + match[0].length, source: "auto", priority: 56 });
+  for (const match of text.matchAll(/\b\p{Lu}[\p{L}'-]{2,}\b/gu)) {
+    if (match.index !== undefined && firstNames.includes(normalizeLookup(match[0]))) {
+      candidates.push({ category: "PRENOM", original: match[0], start: match.index, end: match.index + match[0].length, source: "auto", priority: 88 });
     }
   }
 };
@@ -115,7 +127,7 @@ export const assignPlaceholders = (candidates: Array<Omit<Detection, "id" | "pla
   const counters = new Map<SensitiveCategory, number>();
   const byValue = new Map<string, string>();
   return candidates.map((candidate) => {
-    const key = candidate.category + ":" + candidate.original.toLocaleLowerCase("fr-FR");
+    const key = candidate.category + ":" + normalizeLookup(candidate.original);
     let placeholder = byValue.get(key);
     if (!placeholder) {
       const next = (counters.get(candidate.category) ?? 0) + 1;
@@ -130,6 +142,7 @@ export const assignPlaceholders = (candidates: Array<Omit<Detection, "id" | "pla
 export const detectSensitiveData = (text: string, customRules: CustomRule[] = [], status: Detection["status"] = "pending"): Detection[] => {
   const candidates: Candidate[] = [];
   collectRegex(text, candidates);
+  collectPersonPairs(text, candidates);
   collectFirstNames(text, candidates);
   collectTerms(text, healthTerms, "SANTE", candidates);
   collectTerms(text, financeTerms, "FINANCE", candidates);
