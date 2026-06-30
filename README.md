@@ -1,4 +1,4 @@
-﻿# SanizOtter
+# SanizOtter
 
 SanizOtter est une application desktop locale qui anonymise un texte avant de l'envoyer a une IA, puis restaure les vraies valeurs quand l'IA renvoie un texte contenant les balises.
 
@@ -55,6 +55,15 @@ Objectif : garder le confort du copier-coller, tout en reduisant fortement l'exp
 6. Cliquer sur `Restaurer`.
 7. Recuperer le texte final avec les vraies valeurs remises localement.
 
+
+## Telechargement direct
+
+Les versions installeur sont publiees dans les Releases GitHub :
+
+- Page de telechargement : https://github.com/RoYaL63/SanizOtter/releases
+- Fichier Windows attendu : `SanizOtter-Setup-x.y.z.exe`
+
+Pour tester comme un utilisateur normal, il suffit d'ouvrir la page Releases, de telecharger le `.exe`, puis de lancer l'installateur. Les commandes npm restent utiles uniquement pour les developpeurs.
 ## Commandes utiles
 
 Installer les dependances :
