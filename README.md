@@ -47,7 +47,8 @@ La table de correspondance entre balises et vraies valeurs ne vit que dans la se
 
 ## Fonctionnalités
 
-- **Détection automatique** de plusieurs familles de données : prénoms et noms probables, emails, téléphones français, SIRET / SIREN, IBAN, cartes bancaires, IP, URL, identifiants, dates, adresses postales simples, termes santé et finance.
+- **Détection automatique** de plusieurs familles de données : prénoms et noms probables, emails, téléphones français, SIRET / SIREN, IBAN, cartes bancaires, IP, URL, clés API (Stripe, OpenAI, tokens JWT, secrets webhook), dates, adresses postales simples, termes santé et finance.
+- **Détection par étiquette** : sur une ligne `Étiquette : valeur` (Numéro de contrat, Device ID, Secret Webhook, Référence interne…), le mot avant les deux-points indique quoi masquer, et SanizOtter masque la valeur entière en choisissant la catégorie d'après l'étiquette.
 - **Règles personnalisées**, exactes ou en regex, sauvegardées localement pour vos secrets métier (clés Stripe, codes client, références internes).
 - **Balisage manuel** : sélectionnez un passage dans le texte, choisissez sa catégorie, créez la balise.
 - **Tableau de vérification** : chaque détection est listée avec sa valeur, sa catégorie, sa source et son état. Vous pouvez corriger une catégorie ou ignorer une détection avant de copier.

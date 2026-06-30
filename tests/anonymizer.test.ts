@@ -43,6 +43,22 @@ describe("anonymizer", () => {
     expect(sanitized).not.toContain("api_live_");
   });
 
+  it("masks the whole value of labeled fields and keeps the label readable", () => {
+    const text = "Numero de client interne: CL-AGD-000847\nSecret Webhook: whsec_test_92f7b3e1c0d4a88ea3d19a5c7e9af012\nBIC: BNPAFRPPXXX";
+    const sanitized = sanitizeText(text, detectSensitiveData(text, [], "accepted"));
+    expect(sanitized).toContain("Numero de client interne: {{IDENTIFIANT_1}}");
+    expect(sanitized).not.toContain("CL-AGD-000847");
+    expect(sanitized).not.toContain("whsec_test_");
+    expect(sanitized).toContain("BIC: {{FINANCE_1}}");
+  });
+
+  it("detects JWT access tokens outside labeled fields", () => {
+    const text = "Le jeton eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test-token-value est expire.";
+    const sanitized = sanitizeText(text, detectSensitiveData(text, [], "accepted"));
+    expect(sanitized).toContain("{{API_KEY_1}}");
+    expect(sanitized).not.toContain("eyJ");
+  });
+
   it("supports custom exact rules", () => {
     const rules: CustomRule[] = [{ id: "rule-1", label: "Secret", pattern: "abc-secret-123", category: "API_KEY", isRegex: false }];
     const text = "La cle est abc-secret-123.";
