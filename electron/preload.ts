@@ -1,2 +1,2 @@
 import { contextBridge } from "electron";
-contextBridge.exposeInMainWorld("anonymotter", { platform: "desktop" });
+contextBridge.exposeInMainWorld("sanizotter", { platform: "desktop" });

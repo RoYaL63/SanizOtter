@@ -1,136 +1,115 @@
-# SanizOtter
+<p align="center">
+  <img src="public/sanizotter-logo.png" alt="SanizOtter" width="160" />
+</p>
 
-SanizOtter est une application desktop locale qui anonymise un texte avant de l'envoyer a une IA, puis restaure les vraies valeurs quand l'IA renvoie un texte contenant les balises.
+<h1 align="center">SanizOtter</h1>
 
-L'idee est simple : on colle un texte sensible, SanizOtter remplace les donnees personnelles ou confidentielles par des variables comme `{{PRENOM_1}}`, `{{EMAIL_1}}` ou `{{API_KEY_1}}`, puis on peut donner ce texte anonymise a une IA. Quand l'IA a fini son travail, on recolle sa reponse dans SanizOtter pour remettre les vraies donnees localement.
+<p align="center">
+  <strong>Le sas local entre vos données sensibles et l'IA.</strong><br/>
+  Anonymisez un texte avant de l'envoyer à une IA, puis restaurez les vraies valeurs au retour.
+</p>
 
-## Pourquoi ce projet existe
+<p align="center">
+  <a href="https://github.com/RoYaL63/SanizOtter/releases"><img src="https://img.shields.io/github/v/release/RoYaL63/SanizOtter?label=t%C3%A9l%C3%A9charger&color=2ea043" alt="Dernière version" /></a>
+  <a href="https://github.com/RoYaL63/SanizOtter/actions/workflows/ci.yml"><img src="https://github.com/RoYaL63/SanizOtter/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <img src="https://img.shields.io/badge/plateforme-Windows-blue" alt="Windows" />
+  <img src="https://img.shields.io/badge/traitement-100%25%20local-mint?color=3ddc97" alt="100% local" />
+</p>
 
-Les assistants IA sont puissants, mais on ne veut pas toujours leur envoyer des noms, emails, numeros, secrets techniques, donnees clients ou informations RGPD. SanizOtter sert de sas local entre le texte original et l'IA.
+---
 
-Objectif : garder le confort du copier-coller, tout en reduisant fortement l'exposition des donnees sensibles.
+## En une phrase
 
-## Ce qui marche aujourd'hui
+Vous collez un texte sensible, SanizOtter remplace les données personnelles ou confidentielles par des variables comme `{{PRENOM_1}}`, `{{EMAIL_1}}` ou `{{API_KEY_1}}`. Vous envoyez ce texte propre à une IA. Quand l'IA renvoie sa réponse, vous la recollez dans SanizOtter et les vraies valeurs reviennent, en local.
 
-- Application Electron + React + TypeScript.
-- Interface locale, sans compte et sans backend.
-- Mode clair / sombre inspire du design system OtterMorphisme.
-- Detection automatique de plusieurs familles de donnees :
-  - prenoms et noms probables ;
-  - emails ;
-  - telephones francais ;
-  - SIRET / SIREN ;
-  - IBAN ;
-  - cartes bancaires probables ;
-  - IP, URL, identifiants ;
-  - dates ;
-  - adresses postales simples ;
-  - termes sante / finance configurables dans le code.
-- Mode rapide : anonymisation directe.
-- Mode revision : les detections restent visibles et modifiables.
-- Ajout manuel d'une balise depuis une selection de texte.
-- Regles personnalisees exactes ou regex.
-- Desanonymisation d'une reponse IA contenant les balises.
-- Signalement des balises inconnues.
-- Table de correspondance uniquement en session : rien n'est sauvegarde volontairement.
-- Tests unitaires du moteur d'anonymisation.
-- Configuration pour generer un installateur Windows `.exe`.
+## Pourquoi
 
-## Ce qui ne marche pas encore ou reste imparfait
+Les assistants IA sont utiles, mais on ne veut pas toujours leur transmettre des noms, des emails, des numéros, des secrets techniques, des données clients ou des informations couvertes par le RGPD. SanizOtter garde le confort du copier-coller tout en réduisant fortement l'exposition des données sensibles. Aucun compte, aucun serveur, aucun appel réseau : tout se passe dans la fenêtre.
 
-- La detection automatique n'est pas une garantie juridique RGPD. Elle aide, mais une verification humaine reste necessaire.
-- Les noms/prenoms sont detectes par heuristiques et listes simples, donc il peut y avoir des faux positifs et des oublis.
-- Les documents PDF, Word, Excel et CSV ne sont pas encore pris en charge : la v1 fonctionne par copier-coller texte.
-- La table de correspondance n'est pas persistante : si l'application est fermee ou reinitialisee, les valeurs ne peuvent plus etre restaurees.
-- Il n'y a pas encore de chiffrement de projet sauvegarde, car la v1 evite justement de stocker les donnees sensibles.
-- L'installateur Windows peut afficher un avertissement SmartScreen tant que l'application n'est pas signee avec un certificat de code signing.
+## Comment ça marche
 
-## Workflow utilisateur
-
-1. Coller le texte original dans la zone Source.
-2. Cliquer sur `Rapide` ou `Revision`.
-3. Copier le texte anonymise.
-4. Envoyer ce texte anonymise a l'IA.
-5. Coller la reponse IA dans la zone Retour IA.
-6. Cliquer sur `Restaurer`.
-7. Recuperer le texte final avec les vraies valeurs remises localement.
-
-
-## Telechargement direct
-
-Les versions installeur sont publiees dans les Releases GitHub :
-
-- Page de telechargement : https://github.com/RoYaL63/SanizOtter/releases
-- Fichier Windows attendu : `SanizOtter-Setup-x.y.z.exe`
-
-Pour tester comme un utilisateur normal, il suffit d'ouvrir la page Releases, de telecharger le `.exe`, puis de lancer l'installateur. Les commandes npm restent utiles uniquement pour les developpeurs.
-## Commandes utiles
-
-Installer les dependances :
-
-```powershell
-npm install
+```
+  Texte original                SanizOtter                 Texte anonymisé
+ ┌───────────────┐          ┌────────────────┐          ┌───────────────────┐
+ │ Marie DUPONT  │   ───▶   │  détection +   │   ───▶   │ {{PRENOM_1}}      │
+ │ marie@ex.com  │          │  remplacement  │          │ {{NOM_1}}         │
+ │ 06 12 34 56   │          │  (table locale)│          │ {{EMAIL_1}} ...   │
+ └───────────────┘          └────────────────┘          └─────────┬─────────┘
+                                                                   │  envoi à l'IA
+        Texte restauré            SanizOtter              Réponse IA avec balises
+ ┌───────────────┐          ┌────────────────┐          ┌─────────▼─────────┐
+ │ Marie DUPONT  │   ◀───   │  restauration  │   ◀───   │ Bonjour           │
+ │ marie@ex.com  │          │ via table local│          │ {{PRENOM_1}} ...  │
+ └───────────────┘          └────────────────┘          └───────────────────┘
 ```
 
-Tester le moteur :
+La table de correspondance entre balises et vraies valeurs ne vit que dans la session en cours. Rien n'est sauvegardé sur le disque.
+
+## Fonctionnalités
+
+- **Détection automatique** de plusieurs familles de données : prénoms et noms probables, emails, téléphones français, SIRET / SIREN, IBAN, cartes bancaires, IP, URL, identifiants, dates, adresses postales simples, termes santé et finance.
+- **Règles personnalisées**, exactes ou en regex, sauvegardées localement pour vos secrets métier (clés Stripe, codes client, références internes).
+- **Balisage manuel** : sélectionnez un passage dans le texte, choisissez sa catégorie, créez la balise.
+- **Tableau de vérification** : chaque détection est listée avec sa valeur, sa catégorie, sa source et son état. Vous pouvez corriger une catégorie ou ignorer une détection avant de copier.
+- **Restauration** d'une réponse IA contenant les balises, avec signalement des balises inconnues.
+- **Mode clair / sombre** inspiré du design system OtterMorphisme.
+- **100% local** : pas de compte, pas de backend, pas d'OCR distant, pas d'appel serveur.
+
+## Installation
+
+### Utilisateur
+
+1. Ouvrez la page [Releases](https://github.com/RoYaL63/SanizOtter/releases).
+2. Téléchargez le fichier `SanizOtter-Setup-x.y.z.exe`.
+3. Lancez l'installateur et suivez les étapes.
+
+> L'installateur n'est pas encore signé. Windows SmartScreen peut afficher un avertissement : choisissez « Informations complémentaires » puis « Exécuter quand même ».
+
+### Développeur
 
 ```powershell
-npm test
+npm install      # dépendances
+npm test         # tests du moteur d'anonymisation
+npm run web      # aperçu navigateur, sans Electron
+npm run desktop  # application desktop locale
+npm run dist     # génère l'installateur Windows dans release/
 ```
 
-Tester en navigateur, sans Electron :
+## Utilisation
 
-```powershell
-npm run web
-```
+1. Collez le texte original dans la zone **Source**.
+2. Cliquez sur **Anonymiser le texte**.
+3. Copiez le **texte anonymisé**.
+4. Envoyez ce texte à l'IA de votre choix.
+5. Collez la réponse de l'IA dans la zone **Restaurer**.
+6. Cliquez sur **Restaurer** pour récupérer le texte avec les vraies valeurs.
 
-Lancer l'application desktop locale :
+Besoin d'ajuster ? Le tableau **Balises trouvées** permet de changer une catégorie ou d'ignorer une détection, et le bloc **Options avancées** sert à baliser une sélection à la main.
 
-```powershell
-npm run desktop
-```
+## Limites connues
 
-Lancer le mode developpement Electron :
+- La détection automatique aide mais ne constitue pas une garantie juridique RGPD. Une relecture humaine reste nécessaire.
+- Les noms et prénoms reposent sur des heuristiques et des listes simples : il peut y avoir des faux positifs et des oublis.
+- Les fichiers PDF, Word, Excel et CSV ne sont pas encore pris en charge. La v1 fonctionne par copier-coller de texte.
+- La table de correspondance n'est pas persistante. Si l'application est fermée ou réinitialisée, les valeurs ne peuvent plus être restaurées (c'est un choix de conception pour éviter de stocker les données sensibles).
+- L'installateur Windows peut déclencher SmartScreen tant qu'il n'est pas signé avec un certificat de code signing.
 
-```powershell
-npm run electron:dev
-```
+## Stack technique
 
-Generer l'installateur Windows :
-
-```powershell
-npm run dist
-```
-
-L'installateur sera genere dans le dossier `release/`.
-
-## Structure du projet
+Electron, React 19, TypeScript, Vite. Tests avec Vitest. Build de l'installateur Windows avec electron-builder (cible NSIS).
 
 ```text
 SanizOtter
-├─ electron/          # Fenetre desktop Electron
-├─ src/               # Interface React et moteur local
-├─ tests/             # Tests du moteur d'anonymisation
-├─ dist/              # Build web genere
-├─ dist-electron/     # Build Electron genere
-└─ release/           # Installateur Windows genere
+├─ electron/   # fenêtre desktop Electron (main + preload)
+├─ src/        # interface React et moteur d'anonymisation local
+├─ tests/      # tests du moteur
+└─ .github/    # workflows CI et release
 ```
 
-## Comment ce projet a ete cree
+## Comment ce projet a été créé
 
-Ce projet a ete entierement vibe code avec Codex par OpenAI.
-
-Le deroule :
-
-1. On a commence par discuter du besoin : anonymiser un texte avant de l'envoyer a une IA, puis restaurer les vraies donnees apres traitement.
-2. On a cree un plan ensemble : format des balises, table de correspondance locale, modes rapide / revision, detection automatique et regles personnalisees.
-3. Le design system OtterMorphisme a ete fourni comme direction visuelle : claymorphisme doux, verre liquide, accent menthe, mode jour / nuit.
-4. Codex a construit la structure Electron + React + TypeScript.
-5. On a corrige les premiers problemes de lancement, les tests, le nom du projet et la preparation GitHub.
-6. Le projet evolue par conversation : l'utilisateur donne le cap, Codex propose les commandes PowerShell, implemente, teste et pousse les changements.
-
-C'est donc un prototype vivant, construit en binome humain + IA, avec une intention claire : rendre l'usage de l'IA plus prudent avec les donnees sensibles.
+Prototype vibe codé en binôme humain + IA. Le besoin (anonymiser un texte avant l'IA puis restaurer après), le format des balises, la table de correspondance locale, la détection automatique et les règles personnalisées ont été définis au fil de la conversation. La direction visuelle vient du design system OtterMorphisme : claymorphisme doux, verre liquide, accent menthe, mode jour / nuit.
 
 ## Licence
 
-Prototype prive pour le moment. A definir avant distribution publique.
+Prototype privé pour le moment. Licence à définir avant distribution publique.
