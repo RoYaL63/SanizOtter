@@ -39,6 +39,7 @@ const financeTerms = ["credit", "dette", "impaye", "pret", "revenu", "salaire", 
 
 const regexSpecs: Array<{ category: SensitiveCategory; regex: RegExp; priority: number }> = [
   { category: "EMAIL", regex: /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, priority: 120 },
+  { category: "API_KEY", regex: /\b(?:sk|pk|rk|ak|api|apikey|key|token|secret|bearer|xox[baprs]|gh[opsu])[_-][A-Z0-9][A-Z0-9_-]{10,}\b/gi, priority: 119 },
   { category: "API_KEY", regex: /\b(?:sk|pk|rk|api|key|token|secret)[-_]?[A-Z0-9]{16,}\b/gi, priority: 118 },
   { category: "IBAN", regex: /\bFR\d{2}(?:[ ]?\d{4}){5}[ ]?\d{3}\b/gi, priority: 116 },
   { category: "TELEPHONE", regex: /(?:(?:\+|00)33[ .-]?[1-9]|0[1-9])(?:[ .-]?\d{2}){4}\b/g, priority: 114 },

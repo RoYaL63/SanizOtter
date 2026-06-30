@@ -33,6 +33,16 @@ describe("anonymizer", () => {
     expect((sanitizeText(text, detections).match(/\{\{EMAIL_1\}\}/g) ?? [])).toHaveLength(2);
   });
 
+  it("detects full API keys with internal separators", () => {
+    const text = "Cle principale sk_test_8f92b3c9c1a24f10b8e1c7e4a91d99ab et secondaire api_live_XYZ-92fa7e10-4f1b-4da3-8e91-ff00123abcd0.";
+    const detections = detectSensitiveData(text, [], "accepted");
+    const sanitized = sanitizeText(text, detections);
+    expect(sanitized).toContain("{{API_KEY_1}}");
+    expect(sanitized).toContain("{{API_KEY_2}}");
+    expect(sanitized).not.toContain("sk_test_");
+    expect(sanitized).not.toContain("api_live_");
+  });
+
   it("supports custom exact rules", () => {
     const rules: CustomRule[] = [{ id: "rule-1", label: "Secret", pattern: "abc-secret-123", category: "API_KEY", isRegex: false }];
     const text = "La cle est abc-secret-123.";
