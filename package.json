@@ -1,1 +1,64 @@
-{"name":"anonymotter","version":"0.1.0","private":true,"type":"module","description":"Application desktop locale pour anonymiser et desanonymiser des textes avant usage avec une IA.","main":"dist-electron/main.js","scripts":{"dev":"vite --host 127.0.0.1","electron:dev":"concurrently -k \"npm run dev\" \"wait-on http://127.0.0.1:5173 && cross-env VITE_DEV_SERVER_URL=http://127.0.0.1:5173 electron .\"","build":"tsc && vite build && tsc -p tsconfig.electron.json","start":"npm run build && electron .","test":"vitest run"},"dependencies":{"@vitejs/plugin-react":"^4.3.4","vite":"^6.0.7","typescript":"^5.7.2","react":"^19.0.0","react-dom":"^19.0.0","electron":"^33.2.1","concurrently":"^9.1.2","wait-on":"^8.0.1","cross-env":"^7.0.3"},"devDependencies":{"@types/node":"^22.10.2","@types/react":"^19.0.2","@types/react-dom":"^19.0.2","vitest":"^2.1.8","jsdom":"^25.0.1"}}
+{
+    "name":  "sanizotter",
+    "version":  "0.1.0",
+    "private":  true,
+    "type":  "module",
+    "description":  "Application desktop locale pour anonymiser et desanonymiser des textes avant usage avec une IA.",
+    "main":  "dist-electron/main.js",
+    "scripts":  {
+                    "web":  "vite --host 127.0.0.1",
+                    "dev":  "vite --host 127.0.0.1",
+                    "electron:dev":  "tsc -p tsconfig.electron.json \u0026\u0026 concurrently -k \"npm run web\" \"wait-on http://127.0.0.1:5173 \u0026\u0026 cross-env VITE_DEV_SERVER_URL=http://127.0.0.1:5173 electron .\"",
+                    "build":  "tsc \u0026\u0026 vite build \u0026\u0026 tsc -p tsconfig.electron.json",
+                    "desktop":  "npm run build \u0026\u0026 electron .",
+                    "start":  "npm run desktop",
+                    "dist":  "npm run build \u0026\u0026 electron-builder --win nsis",
+                    "test":  "vitest run"
+                },
+    "dependencies":  {
+                         "react":  "^19.0.0",
+                         "react-dom":  "^19.0.0"
+                     },
+    "devDependencies":  {
+                            "@types/node":  "^22.10.2",
+                            "@types/react":  "^19.0.2",
+                            "@types/react-dom":  "^19.0.2",
+                            "electron-builder":  "^26.15.3",
+                            "jsdom":  "^25.0.1",
+                            "vitest":  "^2.1.8",
+                            "@vitejs/plugin-react":  "^4.3.4",
+                            "vite":  "^6.0.7",
+                            "typescript":  "^5.7.2",
+                            "electron":  "^33.2.1",
+                            "concurrently":  "^9.1.2",
+                            "wait-on":  "^8.0.1",
+                            "cross-env":  "^7.0.3"
+                        },
+    "productName":  "SanizOtter",
+    "build":  {
+                  "appId":  "com.royal63.sanizotter",
+                  "productName":  "SanizOtter",
+                  "directories":  {
+                                      "output":  "release"
+                                  },
+                  "files":  [
+                                "dist/**/*",
+                                "dist-electron/**/*",
+                                "package.json"
+                            ],
+                  "win":  {
+                              "target":  [
+                                             "nsis"
+                                         ],
+                              "artifactName":  "SanizOtter-Setup-${version}.${ext}"
+                          },
+                  "nsis":  {
+                               "oneClick":  false,
+                               "perMachine":  false,
+                               "allowToChangeInstallationDirectory":  true,
+                               "createDesktopShortcut":  true,
+                               "createStartMenuShortcut":  true
+                           }
+              },
+    "author":  "RoYaL63"
+}
