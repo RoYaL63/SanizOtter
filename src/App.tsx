@@ -2,6 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { addManualDetection, categories, categoryLabels, deanonymizeText, detectSensitiveData, sanitizeText } from "./anonymizer";
 import type { CustomRule, Detection, SensitiveCategory, SessionMapping } from "./types";
 
+declare global {
+  interface Window {
+    sanizotter?: { platform: string; purgeCache?: () => Promise<void> };
+  }
+}
+
 const RULE_STORAGE_KEY = "sanizotter.customRules.v1";
 const sampleText = "Augustin Maillet\naugustin@example.com\n06 12 34 56 78";
 
@@ -46,7 +52,13 @@ function App() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [lastSession, setLastSession] = useState<SessionMapping | null>(null);
   const [modal, setModal] = useState<"support" | null>(null);
+  const [flash, setFlash] = useState<string | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  const flashMessage = (message: string) => {
+    setFlash(message);
+    window.setTimeout(() => setFlash(null), 3000);
+  };
 
   useEffect(() => {
     localStorage.setItem(RULE_STORAGE_KEY, JSON.stringify(rules));
@@ -56,6 +68,12 @@ function App() {
     const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") setModal(null); };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  useEffect(() => {
+    const onUnload = () => { try { sessionStorage.clear(); } catch { /* ignore */ } };
+    window.addEventListener("beforeunload", onUnload);
+    return () => window.removeEventListener("beforeunload", onUnload);
   }, []);
 
   const activeCount = detections.filter((detection) => detection.status !== "ignored").length;
@@ -76,11 +94,14 @@ function App() {
     setUnknownPlaceholders([]);
     setLastSession(null);
   };
-  const purgeArtifact = () => {
-    localStorage.removeItem(RULE_STORAGE_KEY);
-    setRules([makeRule()]);
+  const purgeAll = () => {
     setText("");
     resetSession();
+    setModal(null);
+    try { sessionStorage.clear(); } catch { /* ignore */ }
+    try { void navigator.clipboard.writeText(""); } catch { /* ignore */ }
+    void window.sanizotter?.purgeCache?.();
+    flashMessage("Session purgee : texte, table de correspondance, presse-papier et cache effaces. Regles conservees.");
   };
   const updateDetection = (id: string, patch: Partial<Detection>) => commit(detections.map((detection) => detection.id === id ? { ...detection, ...patch } : detection));
   const updateRule = (id: string, patch: Partial<CustomRule>) => setRules(rules.map((rule) => rule.id === id ? { ...rule, ...patch } : rule));
@@ -109,7 +130,7 @@ function App() {
           <button type="button" className={theme === "dark" ? "active" : ""} aria-pressed={theme === "dark"} onClick={() => setTheme("dark")}>Nuit</button>
         </div>
         <button className="softButton" onClick={resetSession}>Vider</button>
-        <button className="dangerButton" onClick={purgeArtifact}>Purger</button>
+        <button className="dangerButton" onClick={purgeAll} title="Efface le texte, la table de correspondance et le cache disque. Les regles reutilisables sont conservees.">Purger</button>
       </div>
     </nav>
 
@@ -170,6 +191,8 @@ function App() {
         </div>
       </div>
     </div>}
+
+    {flash && <div className="toast" role="status">{flash}</div>}
   </main>;
 }
 
